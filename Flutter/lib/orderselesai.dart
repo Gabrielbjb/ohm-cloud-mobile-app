@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'dart:convert';
 
-import 'package:projectflutter1/auth.dart';
-import 'package:projectflutter1/network.dart';
+import 'auth.dart';
+import 'network.dart';
 
 class CompleteOrderPage extends StatefulWidget {
   const CompleteOrderPage({Key? key}) : super(key: key);
@@ -29,7 +29,13 @@ class _CompleteOrderPageState extends State<CompleteOrderPage> {
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
         var allOrders = responseData["data"];
-        var completedOrders = allOrders.where((order) => order["status"] == "Selesai").toList();
+
+        // Get the user id from authController
+        final userData = Map<String, dynamic>.from(authController.userData);
+        final int userId = userData["id"] ?? -1;
+
+        // Filter orders based on id_member and status
+        var completedOrders = allOrders.where((order) => order["status"] == "Selesai" && order["id_member"] == userId).toList();
         return completedOrders;
       } else {
         var responseData = jsonDecode(response.body);
